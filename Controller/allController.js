@@ -40,17 +40,17 @@ const posturl = async function(req,res){
 
 const get = async function(req,res){
 try {
-     
-    const url = await urlModel.findOne({ urlCode: req.params.code });
+     const Params = req.params.code
+    const url = await urlModel.findOne({ urlCode: Params });
 
     if (url) {
       return res.redirect(url.longUrl);
     } else {
-      return res.status(404).send('No url found');
+      return res.status(404).send({ status:false , message:'No url found'});
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    res.status(500).send({status:false,error:err.message});
   }
 }
 module.exports={
