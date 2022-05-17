@@ -1,0 +1,4 @@
+{
+   "mongoURI":"mongodb+srv://uranium:uranium@cluster0.pgmlm.mongodb.net/project4urlshortner",
+   "baseURI":"https://localhost:3000"
+}
