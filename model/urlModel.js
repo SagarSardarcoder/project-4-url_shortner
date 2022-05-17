@@ -8,12 +8,12 @@ const urlschema = new mongoose.Schema({
         lowercase:true,
         trim:true
     },
-    longURL:{
+    longUrl:{
         type:String,
         required:true,
         trim:true
     },
-    shortURL:{
+    shortUrl:{
         type:String,
         required:true,
         unique:true,

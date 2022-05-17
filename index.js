@@ -1,14 +1,21 @@
-const express = require('express')
+const express = require('express');
+const bodyParser = require('body-parser');
+const route = require('./route/route.js');
+const { default: mongoose } = require('mongoose');
 const app = express();
-const connectDB = require('./config/db')
 
-connectDB()
-
-app.use(express.json({extended:false}))
-
-app.use('/', route)
-
-const PORT = 5000;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.listen(PORT, () => console.log(`server running on port ${PORT}`))
+mongoose.connect("mongodb+srv://uranium:uranium@cluster0.pgmlm.mongodb.net/project4urlshortner")
+.then( () => console.log("MongoDb is connected"))
+.catch ( err => console.log(err) )
+
+
+app.use('/', route);
+
+
+app.listen(process.env.PORT || 3000, function () {
+    console.log('Express app running on port ' + (process.env.PORT || 3000))
+});
