@@ -10,7 +10,7 @@ const isValid = (value)=>{
   if(typeof value == 'string' && value.trim().length == 0) return false;
   return true
 }
-
+const { promisify } = require("util");
 
 const redisClient = redis.createClient(
   13190,
@@ -60,13 +60,18 @@ const posturl = async function(req,res){
 const get = async function(req,res){
 try {
      const Params = req.params.code
-    const url = await urlModel.findOne({ urlCode: Params });
 
-    if (url) {
-      return res.redirect(url.longUrl);
-    } else {
-      return res.status(404).send({ status:false , message:'No url found'});
-    }
+     let findInCache = await GET_ASYNC(`${Params}`)
+     let parseLongUrl = JSON.parse(findInCache)
+     if(parseLongUrl){
+       res.status(302).redirect(parseLongUrl.longUrl)
+     }else{
+       let urlData = await urlModel.findOne({urlCode:Params})
+       if(!urlData) return res.status(404).send({status:false,message:`no url found with this code ${Params}`})
+       await SET_ASYNC(`${Params}`,JSON.stringify(urlData))
+       res.status(302).redirect(urlData.longUrl)
+     }
+    
   } catch (err) {
     console.error(err);
     res.status(500).send({status:false,error:err.message});
