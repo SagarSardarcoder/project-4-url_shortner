@@ -37,7 +37,8 @@ const posturl = async function(req,res){
     //-------------longUrl validation------------//
     if(!isValid(longUrl)) return res.status(400).send({status:false,message:"plese enter longUrl"})
     if (!validator.isUri(longUrl.trim())) return res.status(400).send({status: false,message: "please provide a valid longUrl"})
-  
+    let findUrl = await urlModel.findOne({longUrl})
+    if(findUrl) return res.status(400).send({status:false,message:`url is already shorten and the generated shortenId is:${findUrl.urlCode}`})
     //-------generate shortId---------------//
 
     let urlCode = shorten.generate().toLocaleLowerCase()
@@ -45,8 +46,9 @@ const posturl = async function(req,res){
     let shortUrl =  baseUrl + "/" + urlCode;
     
     let createData = {longUrl,shortUrl,urlCode}
-
+    
   let saveData = await urlModel.create(createData)
+  await SET_ASYNC(`${urlCode}`,JSON.stringify(saveData))
   // console.log(saveData)
   //-------------responce formate-------------//
   let urlRes = await urlModel.findOne(saveData).select({ longUrl: 1,shortUrl: 1, urlCode: 1})
